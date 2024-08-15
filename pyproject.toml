@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "tinygrad"
+version = "0.1.0"
+description = "\"A tiny scalar-valued autograd engine and a neural net library on top of it with PyTorch-like API.\""
+authors = ["Lifan Sun <lifansun1412@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
