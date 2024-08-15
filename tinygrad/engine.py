@@ -12,7 +12,7 @@ class Value:
         self._op = _op #used for debugging and visualization
 
     def __add__(self, other: Value | int | float) -> Value: # self + other
-        ohter = other if isinstance(other, Value) else Value(other)
+        other = other if isinstance(other, Value) else Value(other)
         out = Value(self.data + other.data, (self, other), '+')
 
         def _backward():
