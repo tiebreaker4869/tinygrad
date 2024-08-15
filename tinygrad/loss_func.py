@@ -1,5 +1,6 @@
 from tinygrad.engine import Value
 
+
 class MSELoss:
     def __call__(self, y: list[Value], y_hat: list[Value]) -> Value:
         loss = Value(0)

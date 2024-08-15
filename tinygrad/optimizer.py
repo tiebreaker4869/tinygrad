@@ -2,8 +2,9 @@ from abc import ABC, abstractmethod
 
 from tinygrad.engine import Value
 
-class Optimizer(ABC):    
-    @abstractmethod    
+
+class Optimizer(ABC):
+    @abstractmethod
     def zero_grad():
         pass
 
@@ -11,8 +12,9 @@ class Optimizer(ABC):
     def step():
         pass
 
+
 class SGD(Optimizer):
-    def __init__(self, params: list[Value], lr: float=0.01):
+    def __init__(self, params: list[Value], lr: float = 0.01):
         self.params = params
         self.lr = lr
 

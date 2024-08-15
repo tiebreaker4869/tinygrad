@@ -1,6 +1,7 @@
 import torch
 from tinygrad.engine import Value
 
+
 def test_value_operations():
     # Basic tests
     a = Value(2.0)
@@ -14,7 +15,7 @@ def test_value_operations():
     assert c.data == 6.0
 
     a = Value(2.0)
-    b = a ** 3
+    b = a**3
     assert b.data == 8.0
 
     a = Value(-1.0)
@@ -54,6 +55,7 @@ def test_value_operations():
     b = 6 / a
     assert b.data == 3.0
 
+
 def test_value_backward():
     # Backward tests
     a = Value(2.0)
@@ -69,6 +71,7 @@ def test_value_backward():
     c.backward()
     assert a.grad == 3.0
     assert b.grad == 2.0
+
 
 def test_value_with_torch():
     # Torch comparison tests
@@ -97,10 +100,10 @@ def test_value_with_torch():
     assert torch.isclose(torch.tensor(b_val.grad, dtype=torch.float32), b.grad)
 
     a = torch.tensor(2.0, requires_grad=True, dtype=torch.float32)
-    b = a ** 3
+    b = a**3
     b.backward()
     a_val = Value(2.0)
-    b_val = a_val ** 3
+    b_val = a_val**3
     b_val.backward()
     assert torch.isclose(torch.tensor(b_val.data, dtype=torch.float32), b)
     assert torch.isclose(torch.tensor(a_val.grad, dtype=torch.float32), a.grad)
@@ -146,6 +149,7 @@ def test_value_with_torch():
     assert torch.isclose(torch.tensor(c_val.data, dtype=torch.float32), c)
     assert torch.isclose(torch.tensor(a_val.grad, dtype=torch.float32), a.grad)
     assert torch.isclose(torch.tensor(b_val.grad, dtype=torch.float32), b.grad)
+
 
 def test_value_with_torch_complex():
     # Complex operation 1: (a + b) * c

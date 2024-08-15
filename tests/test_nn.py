@@ -1,16 +1,18 @@
 from tinygrad.engine import Value
 from tinygrad.nn import Module, Neuron, Linear, MLP
 
+
 def test_module_parameters():
     class TestModule(Module):
         def __init__(self):
             super().__init__()
-        
+
         def forward(self, x):
             return x
 
     module = TestModule()
     assert module.parameters() == []
+
 
 def test_neuron_forward():
     in_features = 3
@@ -19,6 +21,7 @@ def test_neuron_forward():
     output = neuron.forward(x)
     assert len(output) == 1
     assert isinstance(output[0], Value)
+
 
 def test_linear_forward():
     in_features = 3
@@ -29,6 +32,7 @@ def test_linear_forward():
     assert len(output) == out_features
     assert all(isinstance(o, Value) for o in output)
 
+
 def test_mlp_forward():
     in_features = 3
     hidden_features = [4, 5]
@@ -38,6 +42,7 @@ def test_mlp_forward():
     output = mlp.forward(x)
     assert len(output) == out_features
     assert all(isinstance(o, Value) for o in output)
+
 
 def test_module_call():
     class TestModule(Module):
@@ -51,6 +56,7 @@ def test_module_call():
     x = [Value(1.0)]
     output = module(x)
     assert output == x
+
 
 def test_module_setattr():
     class TestModule(Module):
