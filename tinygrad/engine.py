@@ -42,6 +42,25 @@ class Value:
 
             return out
 
+        def backward(self) -> None:
+            # topological sort
+            topo: list[Value] = []
+            visited = set()
+
+            def build_topo(v: Value):
+                if v not in visited:
+                    visited.add(v)
+                    for child in v._prev:
+                        build_topo(child)
+                    topo.append(v)
+            
+            build_topo(self)
+
+            # backprop
+            self.grad = 1
+            for v in reversed(topo):
+                v._backward()
+
         def __neg__(self) -> Value: # -self
             return self * -1
 
