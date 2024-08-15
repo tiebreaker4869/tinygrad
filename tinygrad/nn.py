@@ -1,81 +1,60 @@
-from abc import ABC, abstractmethod
 import random
 from tinygrad.engine import Value
-from typing import Any, List
 
+class Module:
 
-class Module(ABC):
+    def zero_grad(self):
+        for p in self.parameters():
+            p.grad = 0
 
-    def __init__(self):
-        self._parameters = []
-        self._modules = {}
-
-    def parameters(self) -> List[Value]:
-        params = self._parameters[:]
-        for module in self._modules.values():
-            params.extend(module.parameters())
-        return params
-
-    @abstractmethod
-    def forward(self, x: List[int | float | Value]) -> List[Value]:
-        pass
-
-    def __call__(self, x: List[int | float | Value]) -> List[Value]:
-        return self.forward(x)
-
-    def __setattr__(self, name: str, value: Any) -> None:
-        if name in {"_parameters", "_modules"}:
-            object.__setattr__(self, name, value)
-        else:
-            if isinstance(value, Module):
-                self._modules[name] = value
-            elif isinstance(value, Value):
-                if value not in self._parameters:
-                    self._parameters.append(value)
-            elif isinstance(value, list):
-                for v in value:
-                    if isinstance(v, Module):
-                        self._modules[name] = v
-                    elif isinstance(v, Value):
-                        if v not in self._parameters:
-                            self._parameters.append(v)
-            object.__setattr__(self, name, value)
-
+    def parameters(self):
+        return []
 
 class Neuron(Module):
-    def __init__(self, in_features: int, nonlin=True):
-        super().__init__()
-        self.w = [Value(random.uniform(-1, 1)) for _ in range(in_features)]
+
+    def __init__(self, nin, nonlin=True):
+        self.w = [Value(random.uniform(-1,1)) for _ in range(nin)]
         self.b = Value(0)
         self.nonlin = nonlin
 
-    def forward(self, x: List[int | float | Value]) -> List[Value]:
-        activation = [sum([x[i] * self.w[i] for i in range(len(x))]) + self.b]
-        if self.nonlin:
-            activation = [Value.relu(act) for act in activation]
-        return activation
+    def __call__(self, x):
+        act = sum((wi*xi for wi,xi in zip(self.w, x)), self.b)
+        return act.relu() if self.nonlin else act
 
+    def parameters(self):
+        return self.w + [self.b]
 
-class Linear(Module):
-    def __init__(self, in_features: int, out_features: int, nonlin=True):
-        super().__init__()
-        self.neurons = [Neuron(in_features, nonlin) for _ in range(out_features)]
+    def __repr__(self):
+        return f"{'ReLU' if self.nonlin else 'Linear'}Neuron({len(self.w)})"
 
-    def forward(self, x: List[int | float | Value]) -> List[Value]:
-        return [neuron(x)[0] for neuron in self.neurons]
+class Layer(Module):
 
+    def __init__(self, nin, nout, **kwargs):
+        self.neurons = [Neuron(nin, **kwargs) for _ in range(nout)]
+
+    def __call__(self, x):
+        out = [n(x) for n in self.neurons]
+        return out[0] if len(out) == 1 else out
+
+    def parameters(self):
+        return [p for n in self.neurons for p in n.parameters()]
+
+    def __repr__(self):
+        return f"Layer of [{', '.join(str(n) for n in self.neurons)}]"
 
 class MLP(Module):
-    def __init__(self, in_features: int, hidden_features: List[int], out_features: int):
-        super().__init__()
-        self.hidden = [Linear(in_features, hidden_features[0])]
-        self.hiddens = [
-            Linear(hidden_features[i], hidden_features[i + 1])
-            for i in range(len(hidden_features) - 1)
-        ]
-        self.out = Linear(hidden_features[-1], out_features)
 
-    def forward(self, x: List[int | float | Value]) -> List[Value]:
-        for layer in self.hidden + self.hiddens:
+    def __init__(self, nin, nouts):
+        sz = [nin] + nouts
+        self.layers = [Layer(sz[i], sz[i+1], nonlin=i!=len(nouts)-1) for i in range(len(nouts))]
+
+    def __call__(self, x):
+        for layer in self.layers:
             x = layer(x)
-        return self.out(x)
+        return x
+
+    def parameters(self):
+        return [p for layer in self.layers for p in layer.parameters()]
+
+    def __repr__(self):
+        return f"MLP of [{', '.join(str(layer) for layer in self.layers)}]"
