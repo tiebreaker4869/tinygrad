@@ -1,3 +1,4 @@
+from __future__ import annotations
 
 class Value:
     """Represents the node in computational graph."""
@@ -8,7 +9,7 @@ class Value:
         # internal stuffs for autograd graph construction
         self._backward = lambda: None #default behavior does nothing
         self._prev = set(_children)
-        self._op = op #used for debugging and visualization
+        self._op = _op #used for debugging and visualization
 
         def __add__(self, other: Value | int | float) -> Value: # self + other
             ohter = other if isinstance(other, Value) else Value(other)
