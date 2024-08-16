@@ -43,3 +43,7 @@ Simple unittests are offered under tests directory, including trivial tests and 
 ```shell
 python -m pytest
 ```
+
+## Acknowledgements
+
+This project was heavily inspired by [micrograd](https://github.com/karpathy/micrograd) by Andrej Karpathy. Many thanks to the author for the excellent work and for making it available to the community.
