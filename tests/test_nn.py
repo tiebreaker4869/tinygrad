@@ -1,12 +1,14 @@
 from tinygrad.engine import Value
 from tinygrad.nn import Neuron, Layer, MLP
 
+
 def test_neuron_initialization():
     nin = 3
     neuron = Neuron(nin)
     assert len(neuron.w) == nin
     assert isinstance(neuron.b, Value)
     assert neuron.nonlin is True
+
 
 def test_neuron_call():
     nin = 3
@@ -15,6 +17,7 @@ def test_neuron_call():
     result = neuron(x)
     assert isinstance(result, Value)
 
+
 def test_layer_initialization():
     nin = 3
     nout = 2
@@ -22,6 +25,7 @@ def test_layer_initialization():
     assert len(layer.neurons) == nout
     for neuron in layer.neurons:
         assert isinstance(neuron, Neuron)
+
 
 def test_layer_call():
     nin = 3
@@ -34,6 +38,7 @@ def test_layer_call():
     for res in result:
         assert isinstance(res, Value)
 
+
 def test_mlp_initialization():
     nin = 3
     nouts = [4, 5, 6]
@@ -41,6 +46,7 @@ def test_mlp_initialization():
     assert len(mlp.layers) == len(nouts)
     for layer in mlp.layers:
         assert isinstance(layer, Layer)
+
 
 def test_mlp_call():
     nin = 3
